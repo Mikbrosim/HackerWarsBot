@@ -28,6 +28,7 @@ class Links:
 
 def Main():
     Start()
+    Hack()
 
 def Start():
     global browser
@@ -42,8 +43,7 @@ def Start():
     loginButton.click()
     userNameField.send_keys(OtherVars.userName)
 
-    while browser.current_url != Links.home:
-        sleep(1)
+    WaitForLoad(Links.home)
     print ("Logged in")
 
     global yourIp
@@ -60,8 +60,7 @@ def ClearLog():
     editLogButton.click()
 
 
-    while browser.current_url != Links.log:
-        sleep(1)
+    WaitForLoad(Links.log)
     print ("Log has been cleared")
 
 def InternetClearLog(ip = "", getIps = False):
@@ -87,17 +86,14 @@ def InternetClearLog(ip = "", getIps = False):
     internetLogField.send_keys(OtherVars.signature)
     internetEditLogButton.click()
 
-    while browser.current_url != Links.internetLog:
-        sleep(1)
+    WaitForLoad(Links.internetLog)
     print ("Log has been cleared on " + ip)
 
 def Install(software):
     print ("Installing " + software)
     i = softwares.index(software)
     browser.get(Links.internetInstall + ids[i])
-    while browser.current_url != Links.internetSoftware:
-        sleep(1)
-        TestForAlert()
+    WaitForLoad(Links.internetSoftware)
     print (software + " installed")
     InternetClearLog()
 
@@ -105,9 +101,7 @@ def Hide(software):
     print ("Hiding " + software)
     i = softwares.index(software)
     browser.get(Links.internetHide + ids[i])
-    while browser.current_url != Links.internetSoftware:
-        sleep(1)
-        TestForAlert()
+    WaitForLoad(Links.internetSoftware)
     print (software + " hid")
     InternetClearLog()
 
@@ -115,9 +109,7 @@ def Upload(software):
     print ("Uploading " + software)
     i = yourSoftwares.index(software)
     browser.get(Links.internetUpload + yourIds[i])
-    while browser.current_url != Links.internetSoftware:
-        sleep(1)
-        TestForAlert()
+    WaitForLoad(Links.internetSoftware)
     print (software + " uploaded")
     InternetClearLog()
 
@@ -127,6 +119,26 @@ def TestForAlert():
         alert.accept()
     except:
         pass
+
+def WaitForLoad(link, errorCheck=False):
+    if errorCheck:
+        try:
+            error = browser.find_element_by_xpath("""/html/body/div[5]/div[3]/div/div[1]/div[2]/strong""")
+        except:
+            pass
+        else:
+            return False
+    while browser.current_url != link:
+        TestForAlert()
+        sleep(1)
+        if errorCheck:
+            try:
+                error = browser.find_element_by_xpath("""/html/body/div[5]/div[3]/div/div[1]/div[2]""")
+            except:
+                pass
+            else:
+                return False
+    return True
 
 def GetHDD(MB = True):
     browser.get(Links.internetSoftware)
@@ -215,8 +227,7 @@ def DDos(ip, times = 1, hack = True, clearLog = True, getSoftware = True):
         ipField.send_keys(ip)
         launchDDosButton.click()
 
-        while browser.current_url != Links.software:
-            sleep(1)
+        WaitForLoad(Links.software)
         print (ip + " has been DDosed")
         sleep(3)
     print("Done DDosing " + ip)
@@ -227,25 +238,22 @@ def Hack(ip = "1.2.3.4", clearLog = True, getSoftware = True, getIps = False):
     browser.get(Links.internetHack)
     browser.get(Links.internetBruteforce)
 
-    while browser.current_url != Links.internetLogin:
-        try:
-            error = browser.find_element_by_xpath("""/html/body/div[5]/div[3]/div/div[1]/div[2]""")
-        except:
-            pass
-        else:
+    databaseError = "Error! This IP is already on your hacked database."
+
+    if WaitForLoad(Links.internetLogin, True) == False:
+        error = browser.find_element_by_xpath("""/html/body/div[5]/div[3]/div/div[1]/div[2]""")
+        errorText = error.text.split("\n")
+        if databaseError != errorText[1]:
             return False
-        sleep(1)
 
     loginButton = browser.find_element_by_xpath("""//*[@id="loginform"]/div[3]/span[3]/input""")
     loginButton.click()
-    while browser.current_url != Links.internet:
-        try:
-            error = browser.find_element_by_xpath("""/html/body/div[5]/div[3]/div/div[1]/div[2]""")
-        except:
-            pass
-        else:
+
+    if WaitForLoad(Links.internet, True) == False:
+        error = browser.find_element_by_xpath("""/html/body/div[5]/div[3]/div/div[1]/div[2]""")
+        errorText = error.text.split("\n")
+        if databaseError != errorText[1]:
             return False
-        sleep(1)
     print ("Hacked " + ip)
 
     if clearLog:
