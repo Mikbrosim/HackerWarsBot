@@ -1,12 +1,17 @@
 # HackerExperienceBot
 
-Disclaimer:
+## Disclaimer:
+
 This isn't a professional python project :D
 
-Requirements:
+## Requirements:
+
 Firefox installed in default directory
+
 Python 3
+
 An account on  https://legacy.hackerexperience.com
 
-Use:
+## Use:
+
 Just run the GUI.py
