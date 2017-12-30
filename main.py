@@ -1,6 +1,4 @@
 from selenium import webdriver
-from selenium.common.exceptions import UnexpectedAlertPresentException
-from selenium.common.exceptions import NoAlertPresentException
 from time import sleep
 import re
 
