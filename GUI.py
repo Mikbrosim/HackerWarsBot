@@ -123,7 +123,7 @@ class Graphics(Frame):
                 tm.showerror("Task", "You cant DDos " + self.ip + " " + self.times + " times")
                 return
             print ('DDos("' + self.ip + '", ' + self.times + ", " + str(self.hack) + ", " + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
-            HE.DDos(self.ip, int(self.times), self.hack, self.clearLog, self.GetSoftware)
+            HE.DDos(self.ip, int(self.times), self.hack, self.clearLog, self.getSoftware)
 
         def Worm(self):
             self.inputWithIps = self.wormText.get("1.0",'end-1c')

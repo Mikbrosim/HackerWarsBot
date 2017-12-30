@@ -22,6 +22,8 @@ def Worm(ips, clearLog, getSoftware, yourIp):
             hackedIps.append(ip)
 
 def program(ip):
-    HE.Upload("Mikbrosim.vddos")
-    HE.GetSoftware(ip)
-    HE.Install("Mikbrosim.vddos")
+    if HE.Upload("Mikbrosim.vddos"):
+        HE.GetSoftware(ip)
+        HE.Install("Mikbrosim.vddos")
+    else:
+        HE.GetSoftware(ip)

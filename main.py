@@ -1,4 +1,6 @@
 from selenium import webdriver
+from selenium.common.exceptions import UnexpectedAlertPresentException
+from selenium.common.exceptions import NoAlertPresentException
 from time import sleep
 import re
 
@@ -8,6 +10,17 @@ ips = []
 class OtherVars:
     userName = "Mikbrosim5"
     signature ="You was hacked by... NameError: name 'userName' is not defined"
+
+class Error:
+    crackerNotGoodEnough = "Error! Access denied: your cracker is not good enough."
+    login = "Error! This IP is already on your hacked database."
+    loginPath = """/html/body/div[5]/div[3]/div/div[1]/div[2]"""
+    invalidIp = "Error! Invalid IP address."
+    notHacked = "Error! This IP is not on your Hacked Database."
+    ddosPath = """/html/body/div[5]/div[3]/div/div/div[1]/strong"""
+    processNotFound = "Error! Process not found."
+    logPath = """/html/body/div[5]/div[3]/div/div[1]/strong"""
+
 
 class Links:
     log = 'https://legacy.hackerexperience.com/log'
@@ -28,7 +41,6 @@ class Links:
 
 def Main():
     Start()
-    Hack()
 
 def Start():
     global browser
@@ -43,7 +55,7 @@ def Start():
     loginButton.click()
     userNameField.send_keys(OtherVars.userName)
 
-    WaitForLoad(Links.home)
+    WaitForLoad(Links.home, reload = False, errorCheckBool = False)
     print ("Logged in")
 
     global yourIp
@@ -58,7 +70,6 @@ def ClearLog():
 
     logField.clear()
     editLogButton.click()
-
 
     WaitForLoad(Links.log)
     print ("Log has been cleared")
@@ -86,7 +97,9 @@ def InternetClearLog(ip = "", getIps = False):
     internetLogField.send_keys(OtherVars.signature)
     internetEditLogButton.click()
 
-    WaitForLoad(Links.internetLog)
+    if WaitForLoad(Links.internetLog, errorPath = Error.logPath) == False:
+        if Error.processNotFound == errorText[1]:
+            return False
     print ("Log has been cleared on " + ip)
 
 def Install(software):
@@ -96,6 +109,7 @@ def Install(software):
     WaitForLoad(Links.internetSoftware)
     print (software + " installed")
     InternetClearLog()
+    return True
 
 def Hide(software):
     print ("Hiding " + software)
@@ -104,6 +118,7 @@ def Hide(software):
     WaitForLoad(Links.internetSoftware)
     print (software + " hid")
     InternetClearLog()
+    return True
 
 def Upload(software):
     print ("Uploading " + software)
@@ -112,33 +127,36 @@ def Upload(software):
     WaitForLoad(Links.internetSoftware)
     print (software + " uploaded")
     InternetClearLog()
+    return True
 
-def TestForAlert():
-    try:
-        alert = browser.switch_to_alert()
-        alert.accept()
-    except:
-        pass
-
-def WaitForLoad(link, errorCheck=False):
-    if errorCheck:
-        try:
-            error = browser.find_element_by_xpath("""/html/body/div[5]/div[3]/div/div[1]/div[2]/strong""")
-        except:
-            pass
-        else:
+def WaitForLoad(link, reload = True, errorCheckBool=True, errorPath = "null"):
+    if errorCheckBool:
+        if ErrorCheck(errorPath):
             return False
     while browser.current_url != link:
-        TestForAlert()
+        if reload:
+            browser.refresh()
         sleep(1)
-        if errorCheck:
-            try:
-                error = browser.find_element_by_xpath("""/html/body/div[5]/div[3]/div/div[1]/div[2]""")
-            except:
-                pass
+        if errorCheckBool:
+            if errorPath == "null":
+                print("errorPath = null cant check for errors")
             else:
-                return False
+                if ErrorCheck(errorPath):
+                    return False
+
     return True
+
+def ErrorCheck(errorPath):
+    global errorText
+    try:
+        error = browser.find_element_by_xpath(errorPath)
+    except:
+        pass
+        return False
+    else:
+        errorText = error.text.split("\n")
+        print(errorText[1])
+        return True
 
 def GetHDD(MB = True):
     browser.get(Links.internetSoftware)
@@ -218,17 +236,24 @@ def GetYourSoftware():
 def DDos(ip, times = 1, hack = True, clearLog = True, getSoftware = True):
     if hack:
         Hack(ip, clearLog, getSoftware)
+
+    sleep(2)
     for i in range(0,times):
         browser.get(Links.ddos)
+
+        sleep(1)
 
         ipField = browser.find_element_by_xpath("""//*[@id="content"]/div[3]/div/div/div/div[2]/div/div[1]/div/div[3]/form/div[1]/div/input""")
         launchDDosButton = browser.find_element_by_xpath("""//*[@id="content"]/div[3]/div/div/div/div[2]/div/div[1]/div/div[3]/form/div[2]/div/input""")
 
         ipField.send_keys(ip)
         launchDDosButton.click()
+        sleep(2)
 
-        WaitForLoad(Links.software)
+        if WaitForLoad(Links.software, errorPath = Error.ddosPath) == False:
+            continue
         print (ip + " has been DDosed")
+
         sleep(3)
     print("Done DDosing " + ip)
 
@@ -238,21 +263,15 @@ def Hack(ip = "1.2.3.4", clearLog = True, getSoftware = True, getIps = False):
     browser.get(Links.internetHack)
     browser.get(Links.internetBruteforce)
 
-    databaseError = "Error! This IP is already on your hacked database."
-
-    if WaitForLoad(Links.internetLogin, True) == False:
-        error = browser.find_element_by_xpath("""/html/body/div[5]/div[3]/div/div[1]/div[2]""")
-        errorText = error.text.split("\n")
-        if databaseError != errorText[1]:
+    if WaitForLoad(Links.internetLogin, errorPath=Error.loginPath) == False:
+        if Error.crackerNotGoodEnough == errorText[1]:
             return False
 
     loginButton = browser.find_element_by_xpath("""//*[@id="loginform"]/div[3]/span[3]/input""")
     loginButton.click()
 
-    if WaitForLoad(Links.internet, True) == False:
-        error = browser.find_element_by_xpath("""/html/body/div[5]/div[3]/div/div[1]/div[2]""")
-        errorText = error.text.split("\n")
-        if databaseError != errorText[1]:
+    if WaitForLoad(Links.internet, errorPath=Error.loginPath) == False:
+        if Error.crackerNotGoodEnough == errorText[1]:
             return False
     print ("Hacked " + ip)
 
