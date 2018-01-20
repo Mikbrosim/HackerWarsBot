@@ -98,7 +98,10 @@ def InternetClearLog(ip = "", getIps = False):
                     ips.append(foundIp)
 
     internetLogField.clear()
-    internetLogField.send_keys(settings.signature)
+    try:
+        internetLogField.send_keys(settings.signature)
+    except:
+        pass
     internetEditLogButton.click()
 
     if WaitForLoad(Links.internetLog, errorPath = Error.logPath) == False:
