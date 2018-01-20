@@ -142,7 +142,7 @@ class Graphics(Frame):
                     continue
                 else:
                     self.ips.append(foundIp)
-            print ('Worm("' + "str(self.ips)" + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
+            print ('Worm("' + str(self.ips) + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
             Worm.Worm(self.ips, self.clearLog, self.getSoftware, HE.yourIp)
 
 

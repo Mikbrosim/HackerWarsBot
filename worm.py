@@ -6,15 +6,19 @@ import re
 def Worm(ips, clearLog, getSoftware, yourIp):
     HE.GetYourSoftware()
     hackedIps = []
+    hackedIps.append(HE.yourIp)
+    print (HE.yourIp)
     for ip in ips:
         HE.ips.append(ip)
+        print(ip)
+        print(HE.ips)
     while len(HE.ips) >= 1:
         ip = HE.ips[0]
+        print("if " + ip + " in " + str(hackedIps))
+        print("youtIp is " + HE.yourIp)
         if ip in hackedIps:
             HE.ips.remove(ip)
             print (ip + " is in this list " + hackedIps)
-        elif ip == yourIp:
-            continue
         else:
             HE.ips.remove(ip)
             if HE.Hack(ip, clearLog, getSoftware, getIps = True):

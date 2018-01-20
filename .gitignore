@@ -4,3 +4,5 @@
 run.bat
 *.log
 *.pyc
+run GUI.bat
+settings.py
