@@ -152,6 +152,9 @@ ws = root.winfo_screenwidth()
 hs = root.winfo_screenheight()
 root.geometry('705x935+' + str(int(ws/2+50)) + "+25")
 root.title("HE bot")
-root.iconbitmap('HE bot.ico')
+try:
+    root.iconbitmap('HE bot.ico')
+except:
+    pass
 lf = Graphics(root)
 root.mainloop()

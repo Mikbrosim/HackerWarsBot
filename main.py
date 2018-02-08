@@ -27,6 +27,7 @@ class Links:
     ddos = 'https://legacy.hackerexperience.com/list?action=ddos'
     software = 'https://legacy.hackerexperience.com/software'
     internet = 'https://legacy.hackerexperience.com/internet'
+    internetHarddisk = 'https://legacy.hackerexperience.comsoftware?page=external'
     internetWithIp = internet + '?ip='
     internetHack = internet + '?action=hack'
     internetBruteforce = internet + '?action=hack&method=bf'
@@ -63,8 +64,7 @@ def Start():
     print ("Logged in")
 
     global yourIp
-    yourIp = browser.find_element_by_xpath("""/html/body/div[5]/div[1]/div/div[1]/span""")
-    yourIp = yourIp.text
+    yourIp = YourIp()
 
 def ClearLog():
     browser.get(Links.log)
@@ -78,10 +78,15 @@ def ClearLog():
     WaitForLoad(Links.log)
     print ("Log has been cleared")
 
+
 def InternetClearLog(ip = "", getIps = False):
     browser.get(Links.internetLog)
-    internetLogField = browser.find_element_by_xpath("""//*[@id="content"]/div[3]/div/div[3]/div[2]/div/div/div[2]/form/textarea""")
-    internetEditLogButton = browser.find_element_by_xpath("""//*[@id="content"]/div[3]/div/div[3]/div[2]/div/div/div[2]/form/input[2]""")
+    try:
+        internetLogField = browser.find_element_by_xpath("""//*[@id="content"]/div[3]/div/div[3]/div[2]/div/div/div[2]/form/textarea""")
+        internetEditLogButton = browser.find_element_by_xpath("""//*[@id="content"]/div[3]/div/div[3]/div[2]/div/div/div[2]/form/input[2]""")
+    except:
+        InternetClearLog(ip, getIps)
+        return
 
     if getIps:
         rawLog = internetLogField.text
@@ -109,6 +114,20 @@ def InternetClearLog(ip = "", getIps = False):
             return False
     print ("Log has been cleared on " + ip)
 
+def YourIp():
+    yourIp = browser.find_element_by_xpath("""/html/body/div[5]/div[1]/div/div[1]/span""")
+    yourIp = yourIp.text
+    return yourIp
+
+def Download(software):
+    print ("Downloading " + software)
+    GetYourHarddisk()
+    i = harddisk.index(software)
+    browser.get(Links.harddisk + "&action=download&id=" + ids[i])
+    WaitForLoad(Links.internetSoftware)
+    print (software + " downloaded")
+    return True
+
 def Install(software):
     print ("Installing " + software)
     i = softwares.index(software)
@@ -128,13 +147,18 @@ def Hide(software):
     return True
 
 def Upload(software):
-    print ("Uploading " + software)
-    i = yourSoftwares.index(software)
-    browser.get(Links.internetUpload + yourIds[i])
-    WaitForLoad([Links.internet, Links.internetSoftware])
-    print (software + " uploaded")
-    InternetClearLog()
-    return True
+    try:
+        print ("Uploading " + software)
+        i = yourSoftwares.index(software)
+        browser.get(Links.internetUpload + yourIds[i])
+        WaitForLoad([Links.internet, Links.internetSoftware])
+        print (software + " uploaded")
+        InternetClearLog()
+        return True
+    except:
+        pass
+        Download(software)
+        Upload(software)
 
 def WaitForLoad(link, reload = True, errorCheckBool=True, errorPath = "null"):
     if errorCheckBool:
@@ -208,6 +232,45 @@ def GetInternetSpeed(Mbit = True):
         return internetSpeed
     else:
         return internetSpeed/1000
+
+def GetYourHarddisk():
+    browser.get(Links.harddisk)
+    global harddiskIds
+    global harddiskSoftwares
+    global harddiskVersions
+    global harddiskSizes
+    harddiskIds = ["None"]
+    harddiskSoftwares = ["None"]
+    harddiskVersions = ["None"]
+    harddiskSizes = ["None"]
+    i = 0
+    try:
+        while True:
+            i += 1
+            baseXpath = "/html/body/div[5]/div[3]/div/div/div/div[2]/div[1]/table/tbody/"
+
+            try:
+                info = browser.find_element_by_xpath(baseXpath + "tr[" + str(i) + "]/td[5]/a[1]")
+                link = info.get_attribute('href')
+                id = link.replace("https://legacy.hackerexperience.com/software?id=", "")
+            except:
+                id = "None"
+
+            info = browser.find_element_by_xpath(baseXpath + "tr[" + str(i) + "]/td[2]")
+            software = info.text
+
+            info = browser.find_element_by_xpath(baseXpath + "tr[" + str(i) + "]/td[3]")
+            version = info.text
+
+            info = browser.find_element_by_xpath(baseXpath + "tr[" + str(i) + "]/td[4]")
+            size = info.text
+
+            harddiskSizes.insert(i, size)
+            harddiskVersions.insert(i, version)
+            harddiskSoftwares.insert(i, software)
+            harddiskIds.insert(i, id)
+    except:
+        pass
 
 def GetYourSoftware():
     browser.get(Links.software)
@@ -283,6 +346,8 @@ def Hack(ip = "1.2.3.4", clearLog = True, getSoftware = True, getIps = False):
     browser.get(Links.internetWithIp + ip)
     browser.get(Links.internetHack)
     browser.get(Links.internetBruteforce)
+    if ip != browser.find_element_by_xpath("""/html/body/div[5]/div[3]/div/div[1]/div[1]/div/div[1]/form/div/input[1]""").get_attribute('value'):
+        return False
 
     if WaitForLoad(Links.internetLogin, errorPath=Error.loginPath) == False:
         if Error.crackerNotGoodEnough == errorText[1]:
