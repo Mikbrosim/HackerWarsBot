@@ -93,7 +93,7 @@ class Graphics(Frame):
 
 
         def ClearLog(self):
-            print ("ClearLog()")
+            HE.PrintDebug ("ClearLog()")
             #tm.showinfo("Task", "Clearing Log")
             HE.ClearLog()
 
@@ -104,7 +104,7 @@ class Graphics(Frame):
             if self.ip == "":
                 tm.showerror("Task", 'You cant hack "none" ip')
                 return
-            print ('Hack("' + self.ip + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
+            HE.PrintDebug ('Hack("' + self.ip + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
             HE.Hack(self.ip, self.clearLog, self.getSoftware)
             #tm.showinfo("Task", "Hacking: " + self.ip)
 
@@ -122,7 +122,7 @@ class Graphics(Frame):
             except:
                 tm.showerror("Task", "You cant DDos " + self.ip + " " + self.times + " times")
                 return
-            print ('DDos("' + self.ip + '", ' + self.times + ", " + str(self.hack) + ", " + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
+            HE.PrintDebug ('DDos("' + self.ip + '", ' + self.times + ", " + str(self.hack) + ", " + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
             HE.DDos(self.ip, int(self.times), self.hack, self.clearLog, self.getSoftware)
 
         def Worm(self):
@@ -142,9 +142,8 @@ class Graphics(Frame):
                     continue
                 else:
                     self.ips.append(foundIp)
-            print ('Worm("' + str(self.ips) + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
+            HE.PrintDebug ('Worm("' + str(self.ips) + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
             Worm.Worm(self.ips, self.clearLog, self.getSoftware, HE.yourIp)
-
 
 
 root = Tk()
