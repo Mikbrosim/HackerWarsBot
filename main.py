@@ -1,31 +1,17 @@
 from selenium import webdriver
-from time import sleep, clock, gmtime, strftime
+from time import sleep
 import re
-import os
 
 global ips
 ips = []
 
-debug = False
-
-if not os.path.exists("log"):
-    os.makedirs("log")
-logName="log\\" + strftime("%Y-%m-%d_%H-%M", gmtime()) + "_log.txt"
-
 try:
     import settings
-    debug = settings.debug
 except:
     pass
 
-
-########
-# To-Do
-########
-
 class Error:
     crackerNotGoodEnough = "Error! Access denied: your cracker is not good enough."
-    noCracker = "Error! You do not have the needed software to perform this action."
     login = "Error! This IP is already on your hacked database."
     loginPath = """/html/body/div[5]/div[3]/div/div[1]/div[2]/strong"""
     invalidIp = "Error! Invalid IP address."
@@ -53,19 +39,6 @@ class Links:
     internetUpload = internet + '?view=software&cmd=up&id='
     internetHide = internet + '?view=software&cmd=hide&id='
 
-def PrintDebug(inputString):
-    if debug:
-        print(inputString)
-    file = open(logName,"a")
-    file.write(str(inputString) + "\n")
-    file.close
-
-def Print(inputString):
-    print(inputString)
-    file = open(logName,"a")
-    file.write(str(inputString) + "\n")
-    file.close
-
 def Main():
     Start()
 
@@ -88,22 +61,10 @@ def Start():
         pass
 
     WaitForLoad(Links.home, reload = False, errorCheckBool = False)
-    Print ("Logged in")
+    print ("Logged in")
 
     global yourIp
     yourIp = YourIp()
-
-def TimerStart():
-    global firstTime
-    firstTime = clock()
-
-def TimerStop():
-    return clock() - firstTime
-
-def newEta(input, times):
-    global etaTime
-    etaTime -= (etaTime-input)/times
-    PrintDebug (etaTime)
 
 def ClearLog():
     browser.get(Links.log)
@@ -115,7 +76,7 @@ def ClearLog():
     editLogButton.click()
 
     WaitForLoad(Links.log)
-    Print ("Log has been cleared")
+    print ("Log has been cleared")
 
 
 def InternetClearLog(ip = "", getIps = False):
@@ -151,7 +112,7 @@ def InternetClearLog(ip = "", getIps = False):
     if WaitForLoad(Links.internetLog, errorPath = Error.logPath) == False:
         if Error.processNotFound == errorText[1]:
             return False
-    Print ("Log has been cleared on " + ip)
+    print ("Log has been cleared on " + ip)
 
 def YourIp():
     yourIp = browser.find_element_by_xpath("""/html/body/div[5]/div[1]/div/div[1]/span""")
@@ -159,39 +120,39 @@ def YourIp():
     return yourIp
 
 def Download(software):
-    Print ("Downloading " + software)
+    print ("Downloading " + software)
     GetYourHarddisk()
     i = harddisk.index(software)
     browser.get(Links.harddisk + "&action=download&id=" + ids[i])
     WaitForLoad(Links.internetSoftware)
-    Print (software + " downloaded")
+    print (software + " downloaded")
     return True
 
 def Install(software):
-    Print ("Installing " + software)
+    print ("Installing " + software)
     i = softwares.index(software)
     browser.get(Links.internetInstall + ids[i])
     WaitForLoad([Links.internet, Links.internetSoftware])
-    Print (software + " installed")
+    print (software + " installed")
     InternetClearLog()
     return True
 
 def Hide(software):
-    Print ("Hiding " + software)
+    print ("Hiding " + software)
     i = softwares.index(software)
     browser.get(Links.internetHide + ids[i])
     WaitForLoad([Links.internet, Links.internetSoftware])
-    Print (software + " hid")
+    print (software + " hid")
     InternetClearLog()
     return True
 
 def Upload(software):
     try:
-        Print ("Uploading " + software)
+        print ("Uploading " + software)
         i = yourSoftwares.index(software)
         browser.get(Links.internetUpload + yourIds[i])
         WaitForLoad([Links.internet, Links.internetSoftware])
-        Print (software + " uploaded")
+        print (software + " uploaded")
         InternetClearLog()
         return True
     except:
@@ -203,7 +164,7 @@ def WaitForLoad(link, reload = True, errorCheckBool=True, errorPath = "null"):
     if errorCheckBool:
         if ErrorCheck(errorPath):
             return False
-    PrintDebug ("Wait for " + str(link) + " has loaded")
+    print ("Wait for " + str(link) + " has loaded")
     if isinstance(link, list):
         while browser.current_url not in link:
             if reload:
@@ -234,10 +195,7 @@ def ErrorCheck(errorPath):
     else:
         error = browser.find_element_by_xpath(errorPath.replace("/strong", ""))
         errorText = error.text.split("\n")
-        try:
-            PrintDebug(errorText[1])
-        except:
-            pass
+        print(errorText[1])
         return True
 
 def GetHDD(MB = True):
@@ -331,10 +289,9 @@ def GetYourSoftware():
             baseXpath = "/html/body/div[5]/div[3]/div/div/div/div[2]/div/table/tbody/"
 
             try:
-                info = browser.find_element_by_xpath(baseXpath + "tr[" + str(i) + "]/td[5]/a[3]")
+                info = browser.find_element_by_xpath(baseXpath + "tr[" + str(i) + "]/td[5]/a[1]")
                 link = info.get_attribute('href')
-                id = link.replace("https://legacy.hackerexperience.com/software?action=hide&id=", "")
-                id = id.replace("https://legacy.hackerexperience.com/software?action=del&id=", "")
+                id = link.replace("https://legacy.hackerexperience.com/software?id=", "")
             except:
                 id = "None"
 
@@ -357,19 +314,10 @@ def GetYourSoftware():
 
 def DDos(ip, times = 1, hack = True, clearLog = True, getSoftware = True):
     if hack:
-        if Hack(ip, clearLog, getSoftware) == False:
-            return False
+        Hack(ip, clearLog, getSoftware)
 
     sleep(2)
-    global etaTime
-    etaTime = 0
-
     for i in range(0,times):
-        TimerStart()
-
-        print("")
-        Print ("Starting ddos number " + str(i+1) + "/" + str(times) + " against " + ip)
-        Print ("This ETA: " + str(round(etaTime)) + " seconds, Total ETA: " + str(round(etaTime * (times-i))) + " seconds")
         browser.get(Links.ddos)
 
         sleep(1)
@@ -378,7 +326,7 @@ def DDos(ip, times = 1, hack = True, clearLog = True, getSoftware = True):
         try:
             launchDDosButton = browser.find_element_by_xpath("""//*[@id="content"]/div[3]/div/div/div/div[2]/div/div[1]/div/div[3]/form/div[2]/div/input""")
         except:
-            Print ("To ddos you need to have a breaker")
+            print ("To ddos you need yo have a breaker")
             return
 
         ipField.send_keys(ip)
@@ -386,15 +334,12 @@ def DDos(ip, times = 1, hack = True, clearLog = True, getSoftware = True):
         sleep(2)
 
         if WaitForLoad(Links.software, errorPath = Error.ddosPath) == False:
-            if "Success! DDoS attack against " + ip + " launched." == errorText[1]:
-                WaitForLoad(Links.software, errorPath= """//*[@id="content"]/div[3]/div/div/div/div[2]/div/div[1]/div/div[3]/form/div[1]/div/input""")
-            else:
-                return False
-        Print (ip + " has been DDosed, it took " + str(round(TimerStop())) + " seconds")
-        newEta(TimerStop(),i+1)
+            continue
+        else:
+            print (ip + " has been DDosed")
 
         sleep(3)
-    Print("Done DDosing " + ip)
+    print("Done DDosing " + ip)
 
 def Hack(ip = "1.2.3.4", clearLog = True, getSoftware = True, getIps = False):
     browser.get(Links.internetLogout)
@@ -407,8 +352,6 @@ def Hack(ip = "1.2.3.4", clearLog = True, getSoftware = True, getIps = False):
     if WaitForLoad(Links.internetLogin, errorPath=Error.loginPath) == False:
         if Error.crackerNotGoodEnough == errorText[1]:
             return False
-        elif Error.noCracker == errorText[1]:
-            return False
         else:
             WaitForLoad(Links.internetLogin, errorPath=Error.loginPath)
 
@@ -418,19 +361,17 @@ def Hack(ip = "1.2.3.4", clearLog = True, getSoftware = True, getIps = False):
     if WaitForLoad(Links.internet, errorPath=Error.loginPath) == False:
         if Error.crackerNotGoodEnough == errorText[1]:
             return False
-        elif Error.noCracker == errorText[1]:
-            return False
         else:
             WaitForLoad(Links.internet, errorPath=Error.loginPath)
 
-    Print ("Hacked " + ip)
+    print ("Hacked " + ip)
 
     if clearLog:
-        Print ("Clearing log on " + ip)
+        print ("Clearing log on " + ip)
         InternetClearLog(ip, getIps)
 
     if getSoftware:
-        Print ("Getting software information from " + ip)
+        print ("Getting software information from " + ip)
         GetSoftware(ip)
     return True
 
