@@ -8,11 +8,11 @@ def Worm(ips, clearLog, getSoftware, yourIp):
     hackedIps.append(HE.YourIp())
     for ip in ips:
         HE.ips.append(ip)
-        print(ip)
-        print(HE.ips)
+        HE.PrintDebug(ip)
+        HE.PrintDebug(HE.ips)
 
     while len(HE.ips) >= 1:
-        print ("ips = " + str(HE.ips))
+        HE.PrintDebug ("ips = " + str(HE.ips))
         ip = HE.ips[0]
         if ip in hackedIps:
             HE.ips.remove(ip)
