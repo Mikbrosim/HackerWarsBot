@@ -451,9 +451,10 @@ def GetSoftware(ip = "No ip was given"):
             baseXpath = "/html/body/div[5]/div[3]/div/div[3]/div[2]/div/div[1]/table/tbody/"
 
             try:
-                info = browser.find_element_by_xpath(baseXpath + "tr[" + str(i) + "]/td[5]/a[1]")
+                info = browser.find_element_by_xpath(baseXpath + "tr[" + str(i) + "]/td[5]/a[3]")
                 link = info.get_attribute('href')
-                id = link.replace("https://legacy.hackerexperience.com/internet?view=software&id=", "")
+                id = link.replace("https://legacy.hackerexperience.com/software?action=del&id=", "")
+                id = id.replace("https://legacy.hackerexperience.com/software?action=hide&id=", "")
             except:
                 id = "None"
 
