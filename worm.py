@@ -2,14 +2,11 @@ HE = __import__("main")
 from time import sleep
 import re
 
-def Worm(ips, clearLog, getSoftware, yourIp):
+def Worm(ips, clearLog, getSoftware, yourIp, hackedIps = []):
     HE.GetYourSoftware()
-    hackedIps = []
     hackedIps.append(HE.YourIp())
     for ip in ips:
         HE.ips.append(ip)
-        HE.PrintDebug(ip)
-        HE.PrintDebug(HE.ips)
 
     while len(HE.ips) >= 1:
         HE.PrintDebug ("ips = " + str(HE.ips))
@@ -19,10 +16,24 @@ def Worm(ips, clearLog, getSoftware, yourIp):
         else:
             HE.ips.remove(ip)
             if HE.Hack(ip, clearLog, getSoftware, getIps = True):
-                program(ip)
+                program(ip, hackedIps)
             hackedIps.append(ip)
 
-def program(ip):
-    HE.Upload("Mikbrosim.vddos")
-    HE.GetSoftware(ip)
-    HE.Install("Mikbrosim.vddos")
+def program(ip, hackedIps):
+    HE.PrintDebug("Ips to hack " + str(HE.ips))
+    HE.PrintDebug("Hacked ips " + str(hackedIps))
+    HE.Print("Worm started on " + ip)
+    HE.InternetUpload("Mikbrosim.vddos")
+    HE.InternetInstall("Mikbrosim.vddos", ip)
+
+
+    """
+    HE.PrintDebug(HE.yourIds)
+    HE.PrintDebug(HE.yourSoftwares)
+    HE.PrintDebug(HE.yourVersions)
+    HE.PrintDebug(HE.yourSizes)
+    HE.PrintDebug(HE.ids)
+    HE.PrintDebug(HE.softwares)
+    HE.PrintDebug(HE.versions)
+    HE.PrintDebug(HE.sizes)
+    """

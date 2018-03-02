@@ -1,5 +1,6 @@
 from selenium import webdriver
 from time import sleep, clock, gmtime, strftime
+import datetime
 import re
 import os
 
@@ -7,10 +8,6 @@ global ips
 ips = []
 
 debug = False
-
-if not os.path.exists("log"):
-    os.makedirs("log")
-logName="log\\" + strftime("%Y-%m-%d_%H-%M", gmtime()) + "_log.txt"
 
 try:
     import settings
@@ -20,7 +17,9 @@ except:
 
 
 ########
-# To-Do
+# To-Do:
+# Fix the worm functions (download, upload, install)
+# Add input for hackedIps in worm.py
 ########
 
 class Error:
@@ -33,6 +32,8 @@ class Error:
     ddosPath = """/html/body/div[5]/div[3]/div/div/div[1]/strong"""
     processNotFound = "Error! Process not found."
     logPath = """/html/body/div[5]/div[3]/div/div[1]/strong"""
+    notUploadedPath = "/html/body/div[5]/div[3]/div/div[1]/div[2]/strong"
+    notUploaded = "Error! You do not have enough disk space to download this software."
 
 
 class Links:
@@ -41,7 +42,9 @@ class Links:
     ddos = 'https://legacy.hackerexperience.com/list?action=ddos'
     software = 'https://legacy.hackerexperience.com/software'
     internet = 'https://legacy.hackerexperience.com/internet'
-    internetHarddisk = 'https://legacy.hackerexperience.comsoftware?page=external'
+    harddisk = 'https://legacy.hackerexperience.com/software?page=external'
+    download = harddisk + "&action=download&id="
+    install = software + '?action=install&id='
     internetWithIp = internet + '?ip='
     internetHack = internet + '?action=hack'
     internetBruteforce = internet + '?action=hack&method=bf'
@@ -53,23 +56,16 @@ class Links:
     internetUpload = internet + '?view=software&cmd=up&id='
     internetHide = internet + '?view=software&cmd=hide&id='
 
-def PrintDebug(inputString):
-    if debug:
-        print(inputString)
-    file = open(logName,"a")
-    file.write(str(inputString) + "\n")
-    file.close
-
-def Print(inputString):
-    print(inputString)
-    file = open(logName,"a")
-    file.write(str(inputString) + "\n")
-    file.close
-
 def Main():
     Start()
 
 def Start():
+    if not os.path.exists("logs"):
+        os.makedirs("logs")
+
+    global logName
+    logName = "logs\\" + datetime.datetime.now().strftime('%Y-%m-%d_%H;%M.log')
+
     global browser
     browser = webdriver.Firefox()
     browser.set_window_size(970, 1045)
@@ -93,6 +89,26 @@ def Start():
     global yourIp
     yourIp = YourIp()
 
+def PrintDebug(inputString):
+    inputString = str(RoundTime(datetime.datetime.now().time())) + "   " + str(inputString)
+    if debug:
+        print(inputString)
+    file = open(logName,"a")
+    file.write(str(inputString) + "\n")
+    file.close
+
+def Print(inputString):
+    inputString = str(RoundTime(datetime.datetime.now().time())) + "   " + str(inputString)
+    print(inputString)
+    file = open(logName,"a")
+    file.write(str(inputString) + "\n")
+    file.close
+
+def RoundTime(ct, secs = 0):
+    ct = datetime.datetime(100, 1, 1, ct.hour, ct.minute, ct.second)
+    ct = ct + datetime.timedelta(seconds=secs)
+    return ct.time()
+
 def TimerStart():
     global firstTime
     firstTime = clock()
@@ -100,7 +116,7 @@ def TimerStart():
 def TimerStop():
     return clock() - firstTime
 
-def newEta(input, times):
+def NewEta(input, times):
     global etaTime
     etaTime -= (etaTime-input)/times
     PrintDebug (etaTime)
@@ -158,70 +174,100 @@ def YourIp():
     yourIp = yourIp.text
     return yourIp
 
-def Download(software):
-    Print ("Downloading " + software)
-    GetYourHarddisk()
-    i = harddisk.index(software)
-    browser.get(Links.harddisk + "&action=download&id=" + ids[i])
-    WaitForLoad(Links.internetSoftware)
-    Print (software + " downloaded")
+def Install(software):
+    PrintDebug ("Installing " + software)
+    GetYourSoftware()
+    try:
+        i = yourSoftwares.index(software)
+    except:
+        return False
+    browser.get(Links.install + yourIds[i])
+    WaitForLoad(Links.software)
+    PrintDebug (software + " installed")
     return True
 
-def Install(software):
-    Print ("Installing " + software)
-    i = softwares.index(software)
+def Download(software):
+    PrintDebug ("Downloading " + software)
+    GetYourHarddisk()
+    try:
+        i = harddiskSoftwares.index(software)
+    except:
+        return False
+    browser.get(Links.download + harddiskIds[i])
+    WaitForLoad(Links.software)
+    PrintDebug (software + " downloaded")
+    return True
+
+def InternetInstall(software,ip):
+    PrintDebug ("Installing " + software)
+    GetSoftware(ip)
+    try:
+        i = softwares.index(software)
+    except:
+        return False
     browser.get(Links.internetInstall + ids[i])
     WaitForLoad([Links.internet, Links.internetSoftware])
-    Print (software + " installed")
+    PrintDebug (software + " installed")
     InternetClearLog()
     return True
 
-def Hide(software):
-    Print ("Hiding " + software)
-    i = softwares.index(software)
+def InternetHide(software):
+    PrintDebug ("Hiding " + software)
+    GetSoftware(ip)
+    try:
+        i = softwares.index(software)
+    except:
+        return False
     browser.get(Links.internetHide + ids[i])
     WaitForLoad([Links.internet, Links.internetSoftware])
-    Print (software + " hid")
+    PrintDebug (software + " hid")
     InternetClearLog()
     return True
 
-def Upload(software):
+def InternetUpload(software):
+    PrintDebug ("Uploading " + software)
+    GetYourSoftware()
     try:
-        Print ("Uploading " + software)
         i = yourSoftwares.index(software)
-        browser.get(Links.internetUpload + yourIds[i])
-        WaitForLoad([Links.internet, Links.internetSoftware])
-        Print (software + " uploaded")
-        InternetClearLog()
-        return True
     except:
-        pass
         Download(software)
-        Upload(software)
+        InternetUpload(software)
+    browser.get(Links.internetUpload + yourIds[i])
+    WaitForLoad([Links.internet, Links.internetSoftware], errorPath = Error.notUploadedPath)
+    if errorText[1] == Error.notUploaded:
+        PrintDebug (software + " could'nt be uploaded")
+        return False
+    PrintDebug (software + " uploaded")
+    InternetClearLog()
+    return True
+
+def WaitForLoadErrorCheck(errorCheckBool,errorPath):
+    if errorPath != "null":
+        if errorCheckBool:
+            if ErrorCheck(errorPath):
+                return True
+        else:
+            ErrorCheck(errorPath)
 
 def WaitForLoad(link, reload = True, errorCheckBool=True, errorPath = "null"):
-    if errorCheckBool:
-        if ErrorCheck(errorPath):
-            return False
+    if WaitForLoadErrorCheck(errorCheckBool,errorPath):
+        return False
+    ErrorCheck(errorPath)
     PrintDebug ("Wait for " + str(link) + " has loaded")
     if isinstance(link, list):
         while browser.current_url not in link:
             if reload:
                 browser.refresh()
             sleep(1)
-            if errorCheckBool:
-                if errorPath != "null":
-                    if ErrorCheck(errorPath):
-                        return False
+            if WaitForLoadErrorCheck(errorCheckBool,errorPath):
+                return False
     else:
         while browser.current_url != link:
             if reload:
                 browser.refresh()
             sleep(1)
-            if errorCheckBool:
-                if errorPath != "null":
-                    if ErrorCheck(errorPath):
-                        return False
+            if WaitForLoadErrorCheck(errorCheckBool,errorPath):
+                return False
     return True
 
 def ErrorCheck(errorPath):
@@ -286,6 +332,7 @@ def GetYourHarddisk():
     harddiskVersions = ["None"]
     harddiskSizes = ["None"]
     i = 0
+    PrintDebug("Getting harddisk software")
     try:
         while True:
             i += 1
@@ -325,6 +372,7 @@ def GetYourSoftware():
     yourVersions = ["None"]
     yourSizes = ["None"]
     i = 0
+    PrintDebug("Getting your software")
     try:
         while True:
             i += 1
@@ -333,8 +381,8 @@ def GetYourSoftware():
             try:
                 info = browser.find_element_by_xpath(baseXpath + "tr[" + str(i) + "]/td[5]/a[3]")
                 link = info.get_attribute('href')
-                id = link.replace("https://legacy.hackerexperience.com/software?action=hide&id=", "")
-                id = id.replace("https://legacy.hackerexperience.com/software?action=del&id=", "")
+                id = link.replace("https://legacy.hackerexperience.com/software?action=install&id=", "")
+                id = id.replace("https://legacy.hackerexperience.com/software?action=uninstall&id=", "")
             except:
                 id = "None"
 
@@ -362,14 +410,15 @@ def DDos(ip, times = 1, hack = True, clearLog = True, getSoftware = True):
 
     sleep(2)
     global etaTime
-    etaTime = 0
+    etaTime = 300
 
     for i in range(0,times):
         TimerStart()
 
         print("")
+        etaTimeLeft = str(RoundTime(datetime.datetime.now().time(), round(etaTime * (times-i))))
         Print ("Starting ddos number " + str(i+1) + "/" + str(times) + " against " + ip)
-        Print ("This ETA: " + str(round(etaTime)) + " seconds, Total ETA: " + str(round(etaTime * (times-i))) + " seconds")
+        Print ("This ETA: " + str(round(etaTime)) + " seconds, Total ETA: " + etaTimeLeft + " seconds")
         browser.get(Links.ddos)
 
         sleep(1)
@@ -379,7 +428,15 @@ def DDos(ip, times = 1, hack = True, clearLog = True, getSoftware = True):
             launchDDosButton = browser.find_element_by_xpath("""//*[@id="content"]/div[3]/div/div/div/div[2]/div/div[1]/div/div[3]/form/div[2]/div/input""")
         except:
             Print ("To ddos you need to have a breaker")
-            return
+            try:
+                Download(settings.breaker)
+                browser.get(Links.ddos)
+                sleep(1)
+                ipField = browser.find_element_by_xpath("""//*[@id="content"]/div[3]/div/div/div/div[2]/div/div[1]/div/div[3]/form/div[1]/div/input""")
+                launchDDosButton = browser.find_element_by_xpath("""//*[@id="content"]/div[3]/div/div/div/div[2]/div/div[1]/div/div[3]/form/div[2]/div/input""")
+            except:
+                pass
+                return
 
         ipField.send_keys(ip)
         launchDDosButton.click()
@@ -390,8 +447,8 @@ def DDos(ip, times = 1, hack = True, clearLog = True, getSoftware = True):
                 WaitForLoad(Links.software, errorPath= """//*[@id="content"]/div[3]/div/div/div/div[2]/div/div[1]/div/div[3]/form/div[1]/div/input""")
             else:
                 return False
-        Print (ip + " has been DDosed, it took " + str(round(TimerStop())) + " seconds")
-        newEta(TimerStop(),i+1)
+        Print(ip + " has been DDosed, it took " + str(round(TimerStop())) + " seconds")
+        NewEta(TimerStop(),i+1)
 
         sleep(3)
     Print("Done DDosing " + ip)
@@ -445,6 +502,7 @@ def GetSoftware(ip = "No ip was given"):
     versions = ["None"]
     sizes = ["None"]
     i = 0
+    PrintDebug("Getting software from " + ip)
     try:
         while True:
             i += 1
@@ -453,8 +511,8 @@ def GetSoftware(ip = "No ip was given"):
             try:
                 info = browser.find_element_by_xpath(baseXpath + "tr[" + str(i) + "]/td[5]/a[3]")
                 link = info.get_attribute('href')
-                id = link.replace("https://legacy.hackerexperience.com/software?action=del&id=", "")
-                id = id.replace("https://legacy.hackerexperience.com/software?action=hide&id=", "")
+                id = link.replace("https://legacy.hackerexperience.com/internet?view=software&cmd=install&id=", "")
+                id = id.replace("https://legacy.hackerexperience.com/internet?view=software&cmd=uninstall&id=", "")
             except:
                 id = "None"
 
@@ -481,5 +539,6 @@ def WriteToFiles(ip, minSoftwareVersion, i):
     if minSoftwareVersion <= float(versions[i]):
         with open("software" + str(minSoftwareVersion) + ".txt", "a") as myfile:
             myfile.write(ip + ": " + softwares[i] + " " + versions[i] + " " + sizes[i] + "\n")
+
 if __name__ == "__main__":
 	Main()
