@@ -1,4 +1,4 @@
-
+*.gitignore
 *.ico
 *.txt
 run.bat

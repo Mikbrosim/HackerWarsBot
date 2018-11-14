@@ -4,17 +4,17 @@ from tkinter import *
 import tkinter.messagebox as tm
 import re
 
+HE.Start()
 class Graphics(Frame):
         def __init__(self, master):
             super().__init__(master)
-            HE.Start()
-            self.ClearLogGUI()
+            self.OtherGUI()
             self.HackGUI()
             self.DDosGUI()
             self.WormGUI()
             self.pack()
 
-        def ClearLogGUI(self):
+        def OtherGUI(self):
             self.clearLogButton = Button(self, text="Clear Log", command = self.ClearLog)
             self.clearLogButton.grid(row=0, column=0, sticky=W)
 
@@ -34,7 +34,6 @@ class Graphics(Frame):
             self.hackGetSoftwareCheckbox.grid(row=1, column=4)
             self.hackGetSoftwareCheckbox.select()
 
-
             self.hackButton = Button(self, text="Hack", command = self.Hack)
             self.hackButton.grid(row=1, column=0, sticky=W)
 
@@ -52,7 +51,6 @@ class Graphics(Frame):
             self.ddosTimesEntry.grid(row=2, column=4, sticky=W)
             self.ddosTimesEntry.insert(END, '1')
 
-
             self.ddosTKHack = BooleanVar()
             self.ddosClearLogCheckbox = Checkbutton(self, text="Hack", variable = self.ddosTKHack)
             self.ddosClearLogCheckbox.grid(row=2, column=5)
@@ -67,7 +65,6 @@ class Graphics(Frame):
             self.ddosGetSoftwareCheckbox = Checkbutton(self, text="Get Software", variable = self.ddosTKGetSoftware)
             self.ddosGetSoftwareCheckbox.grid(row=2, column=7)
             self.ddosGetSoftwareCheckbox.select()
-
 
             self.ddosButton = Button(self, text="DDos", command = self.DDos)
             self.ddosButton.grid(row=2, column=0, sticky=W)
@@ -91,10 +88,8 @@ class Graphics(Frame):
             self.wormButton = Button(self, text="Start Worm", command = self.Worm)
             self.wormButton.grid(row=3, column=0, sticky=W)
 
-
         def ClearLog(self):
             HE.PrintDebug ("ClearLog()")
-            #tm.showinfo("Task", "Clearing Log")
             HE.ClearLog()
 
         def Hack(self):
@@ -106,7 +101,6 @@ class Graphics(Frame):
                 return
             HE.PrintDebug ('Hack("' + self.ip + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
             HE.Hack(self.ip, self.clearLog, self.getSoftware)
-            #tm.showinfo("Task", "Hacking: " + self.ip)
 
         def DDos(self):
             self.ip = self.ddosIpEntry.get()
@@ -134,8 +128,6 @@ class Graphics(Frame):
                 return
             self.ips = []
             inputLine = self.inputWithIps
-            #inputLines = self.inputWithIps.split("\n")
-            #for inputLine in inputLines:
             foundIpList = re.findall( r'[0-9]+(?:\.[0-9]+){3}', inputLine)
             for foundIp in foundIpList:
                 if foundIp == HE.yourIp:
@@ -144,7 +136,6 @@ class Graphics(Frame):
                     self.ips.append(foundIp)
             HE.PrintDebug ('Worm("' + str(self.ips) + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
             Worm.Worm(self.ips, self.clearLog, self.getSoftware, HE.yourIp)
-
 
 root = Tk()
 ws = root.winfo_screenwidth()

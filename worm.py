@@ -15,21 +15,24 @@ def Worm(ips, clearLog, getSoftware, yourIp, hackedIps = []):
             HE.ips.remove(ip)
         else:
             HE.ips.remove(ip)
-            if HE.Hack(ip, clearLog, getSoftware, getIps = True):
+            HE.Print("Starting worm on " + ip)
+            if HE.Hack(ip, clearLog, getSoftware, getIps = True, getBTCs = True):
                 program(ip, hackedIps)
             hackedIps.append(ip)
 
 def program(ip, hackedIps):
+    HE.PrintDebug("btcAddr " + str(HE.btcAddr))
+    HE.PrintDebug("btcPass " + str(HE.btcPass))
     HE.PrintDebug("Ips to hack " + str(HE.ips))
     HE.PrintDebug("Hacked ips " + str(hackedIps))
-    HE.Print("Worm started on " + ip)
-    HE.InternetUpload("Mikbrosim.vddos")
-    HE.InternetInstall("Mikbrosim.vddos", ip)
+    HE.Print("program started on " + ip)
+    if HE.InternetUpload("Mikbrosim.vddos"):
+        HE.InternetInstall("Mikbrosim.vddos", ip)
 
 
     """
-    HE.PrintDebug(HE.yourIds)
     HE.PrintDebug(HE.yourSoftwares)
+    HE.PrintDebug(HE.yourIds)
     HE.PrintDebug(HE.yourVersions)
     HE.PrintDebug(HE.yourSizes)
     HE.PrintDebug(HE.ids)
