@@ -16,7 +16,7 @@ a filed in your directory called settings.py
 
 An account on  https://legacy.hackerexperience.com
 
-##Settings
+## Settings:
 The bellow variables can be used in your "settings.py"
 ```
 debug = False
@@ -27,7 +27,7 @@ breaker = ""
 signature = ""
 ```
 
-##Worm
+## Worm:
 You can make your worm program pretty custom, you only need to know a bit of python. Look in the main.py for functions to use :D
 
 ## Use:
