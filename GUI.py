@@ -3,8 +3,7 @@ Worm = __import__("worm")
 from tkinter import *
 import tkinter.messagebox as tm
 import re
-
-HE.Start()
+HE.Main()
 class Graphics(Frame):
         def __init__(self, master):
             super().__init__(master)
@@ -71,7 +70,10 @@ class Graphics(Frame):
 
         def WormGUI(self):
             self.wormIpLabel = Label(self, text="Text containing ips:  ")
-            self.wormIpLabel.grid(row=4, column=0, columnspan = 7, sticky=W)
+            self.wormIpLabel.grid(row=4, column=0, columnspan = 4, sticky=W)
+
+            self.wormIpLabel2 = Label(self, text="Text containing hacked ips:  ")
+            self.wormIpLabel2.grid(row=4, column=5, columnspan = 4, sticky=W)
 
             self.wormTKClearLog = BooleanVar()
             self.wormClearLogCheckbox = Checkbutton(self, text="Clear Log", variable = self.wormTKClearLog)
@@ -83,13 +85,16 @@ class Graphics(Frame):
             self.wormGetSoftwareCheckbox.select()
 
             self.wormText = Text(self, width = 50, height = 50, wrap = WORD)
-            self.wormText.grid(row = 5, column = 0, columnspan = 7, sticky = W)
+            self.wormText.grid(row = 5, column = 0, columnspan = 4, sticky = W)
+
+            self.wormText2 = Text(self, width = 50, height = 50, wrap = WORD)
+            self.wormText2.grid(row = 5, column = 5, columnspan = 4, sticky = W)
 
             self.wormButton = Button(self, text="Start Worm", command = self.Worm)
             self.wormButton.grid(row=3, column=0, sticky=W)
 
         def ClearLog(self):
-            HE.PrintDebug ("ClearLog()")
+            Print("ClearLog()")
             HE.ClearLog()
 
         def Hack(self):
@@ -99,7 +104,7 @@ class Graphics(Frame):
             if self.ip == "":
                 tm.showerror("Task", 'You cant hack "none" ip')
                 return
-            HE.PrintDebug ('Hack("' + self.ip + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
+            HE.PrintLog('Hack("' + self.ip + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
             HE.Hack(self.ip, self.clearLog, self.getSoftware)
 
         def DDos(self):
@@ -116,31 +121,43 @@ class Graphics(Frame):
             except:
                 tm.showerror("Task", "You cant DDos " + self.ip + " " + self.times + " times")
                 return
-            HE.PrintDebug ('DDos("' + self.ip + '", ' + self.times + ", " + str(self.hack) + ", " + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
+            HE.PrintLog('DDos("' + self.ip + '", ' + self.times + ", " + str(self.hack) + ", " + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
             HE.DDos(self.ip, int(self.times), self.hack, self.clearLog, self.getSoftware)
 
         def Worm(self):
+            self.yourIp = HE.YourIp()
             self.inputWithIps = self.wormText.get("1.0",'end-1c')
+            self.inputWithHackedIps = self.wormText2.get("1.0",'end-1c')
             self.clearLog = self.wormTKClearLog.get()
             self.getSoftware = self.wormTKGetSoftware.get()
             if self.inputWithIps == "":
                 tm.showerror("Task", 'You cant start a worm on "none" ip')
                 return
             self.ips = []
+            self.hackedIps = []
             inputLine = self.inputWithIps
             foundIpList = re.findall( r'[0-9]+(?:\.[0-9]+){3}', inputLine)
             for foundIp in foundIpList:
-                if foundIp == HE.yourIp:
+                if foundIp == self.yourIp:
                     continue
                 else:
                     self.ips.append(foundIp)
-            HE.PrintDebug ('Worm("' + str(self.ips) + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
-            Worm.Worm(self.ips, self.clearLog, self.getSoftware, HE.yourIp)
+            if self.inputWithHackedIps != "":
+                foundIpList = re.findall( r'[0-9]+(?:\.[0-9]+){3}', self.inputWithHackedIps)
+                for foundIp in foundIpList:
+                    if foundIp == self.yourIp:
+                        continue
+                    else:
+                        self.hackedIps.append(foundIp)
+            HE.PrintLog('Worm("' + str(self.ips) + '", ' + str(self.clearLog) + ", " + str(self.getSoftware) + ")")
+            Worm.Worm(self.ips, self.clearLog, self.getSoftware, self.hackedIps)
 
 root = Tk()
 ws = root.winfo_screenwidth()
 hs = root.winfo_screenheight()
-root.geometry('705x935+' + str(int(ws/2+50)) + "+25")
+#geo = '705x935+' + str(int(ws/2+50)) + "+25"
+geo = str(round(ws/2)) + 'x' + str(round(hs/2*0.9)) + '+' + str(round(ws/2*0.99)) + '+0'
+root.geometry(geo)
 root.title("HE bot")
 try:
     root.iconbitmap('HE bot.ico')

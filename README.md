@@ -12,11 +12,10 @@ Python 3
 
 Selenium
 
-a filed in your directory called settings.py
-
 An account on  https://legacy.hackerexperience.com
 
 ## Settings:
+Create a file called "settings.py" in your directory.
 The bellow variables can be used in your "settings.py"
 ```
 debug = False
@@ -24,6 +23,7 @@ firefox = False
 password = ""
 userName = ""
 breaker = ""
+cracker = ""
 signature = ""
 ```
 

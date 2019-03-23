@@ -1,8 +1,8 @@
 *.gitignore
 *.ico
 *.txt
-run.bat
+*.bat
 *.log
 *.pyc
-run GUI.bat
+*.pkl
 settings.py
