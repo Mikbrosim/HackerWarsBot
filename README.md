@@ -1,4 +1,3 @@
-
 # HackerWarsBot
 A bot made to play the game HackerWars, in earlier days known has HackerExperience
 I hope this bot can be of use :D
@@ -17,7 +16,7 @@ I hope this bot can be of use :D
 	- Medium (Check balance)
 	- Hard (Transfer money)
 - 	**Gather software information**
-- **Automatic bitcoin login** (You can remove this feature in bot.py)
+- **Automatic bitcoin login** (You can remove this feature in [bot.py](https://github.com/Mikbrosim/HackerExperienceBot/blob/95180f16822b96f4d16f476545f07c378e44695a/bot.py#L237))
 
 ## Requirements
 - Chrome
@@ -52,12 +51,11 @@ missionCrackerVersion = 2.9
 secondBTCaddr = ""
 ```
 
-## Worm
-### How it works
+## How the worm works
 Start the worm by inputting a text containing one or more ips with the option to avoid some other ips
 If able to obtain access to the remote server, the worm then scours through the log, in order for it to obtain more ips to infect. After looking through the log, the bot then proceeds to infect the server.
 
-How the worm and infection is carried out can be edited in the last two functions in the file modules.py
+How the worm and infection is carried out can be edited in the last two functions in the file modules.py [Worm](https://github.com/Mikbrosim/HackerExperienceBot/blob/95180f16822b96f4d16f476545f07c378e44695a/modules.py#L1141) [Infect](https://github.com/Mikbrosim/HackerExperienceBot/blob/95180f16822b96f4d16f476545f07c378e44695a/modules.py#L1155)
 
 ## How to use
 Just run bot.py with python3
