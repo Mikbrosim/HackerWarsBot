@@ -6,3 +6,6 @@
 *.pyc
 *.pkl
 settings.py
+softwares.json
+test.py
+HackerExperience
