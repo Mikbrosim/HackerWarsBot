@@ -21,7 +21,7 @@ I hope this bot can be of use :D
 ## Requirements
 - Chrome
 - Python 3
-- Selenium
+- Selenium 4.2.0
 - Tkinter
 - An account on  https://hackerwars.io/
 
@@ -58,4 +58,6 @@ If able to obtain access to the remote server, the worm then scours through the 
 How the worm and infection is carried out can be edited in the last two functions in the file modules.py [Worm](https://github.com/Mikbrosim/HackerExperienceBot/blob/95180f16822b96f4d16f476545f07c378e44695a/modules.py#L1141) [Infect](https://github.com/Mikbrosim/HackerExperienceBot/blob/95180f16822b96f4d16f476545f07c378e44695a/modules.py#L1155)
 
 ## How to use
-Just run bot.py with python3
+First install Requirments
+`pip install -r requirements.txt`
+Then just run bot.py with python3
